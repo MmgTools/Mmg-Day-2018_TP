@@ -399,7 +399,7 @@ $ mmg2d_O3 Data/naca_embedded.mesh -sol naca_iso.sol -hausd 0.001 -v 5
 
 Again, you can play with the gradation parameter.
 
-\section{Call the \mmg\ libraries to manually compute a size map}
+\section{Call the \mmg\ libraries to manually compute a size map\label{size_map}}
 \mmg\ can be called from \ttb{C}, \ttb{C++} or \ttb{Fortran} code
 using its API functions.\\
 
@@ -496,7 +496,7 @@ the solution value at each mesh node:
  and the final mesh (\ttb{firstSizeMap.mesh}).\\
 
 \section{Size map computation to control the error of interpolation of an
-  analytic function over the mesh}
+  analytic function over the mesh\label{error_interp}}
 \subsection{Computation of the nodal values of a 2D analytic function}
 \begin{enumerate}
 \item Choose a function, for example, the following sinus function
@@ -587,7 +587,10 @@ file:
   of the eigenvalues of $\bar{H}(V)$ and compute
   $ s(V) = \frac{1}{\sqrt{\bar{\lambda}}}$.
 \end{enumerate}
-Tun theapplication and check your isotropic metric
+Run the application and check your isotropic metric
 field as well as the adapted mesh.\\
+
+You can find a correction of the the \ref{size_map} and
+\ref{error_interp} sections in the \ttb{Correction} folder of this repository.
 
 \end{document}

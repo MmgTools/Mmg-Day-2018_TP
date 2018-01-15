@@ -1,4 +1,7 @@
-.tex
-.o.mesh
-.o.sol
+*.aux
+*.log
+*.out
+*.o.mesh
+*.o.sol
 a.out
+*Icon*
