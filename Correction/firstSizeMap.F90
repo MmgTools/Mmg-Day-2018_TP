@@ -45,7 +45,7 @@ PROGRAM main
   MMG5_DATA_PTR_T    :: mmgMesh
   MMG5_DATA_PTR_T    :: mmgSol
   INTEGER            :: ier,argc,k
-  CHARACTER(len=300) :: exec_name,filein,fileout
+  CHARACTER(len=300) :: exec_name,filein
 
   INTEGER            :: ne,ned,np
   REAL(KIND=8)       :: scalar_size,x,y,s
@@ -128,7 +128,7 @@ PROGRAM main
         CALL EXIT(104)
      ENDIF
 
-     ! Computation of the analytical function at mesh node
+     ! Computation of the scalar size at mesh node
      s = scalar_size(x,y);
 
      ! Give solution value at position k
@@ -169,7 +169,6 @@ PROGRAM main
   ENDIF
 
   !! remesh function
-  ! NULLIFY(va)
   CALL MMG2D_mmg2dlib(mmgMesh,mmgSol,ier)
   IF ( ier == MMG5_STRONGFAILURE ) THEN
     PRINT*,"BAD ENDING OF MMG2DLIB: UNABLE TO SAVE MESH"

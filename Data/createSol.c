@@ -155,7 +155,7 @@ int main(int argc,char *argv[]) {
   MMG5_pSol       mmgSol;
   double          epsilon,x,y,scalarSol,tensorSol[3];
   int             ier,metType,k;
-  char            *filename, vizuSol[17],vizuMet[15],*saveMet;
+  char            *filename;
 
   fprintf(stdout,"  -- TEST MMG2DLIB \n");
 

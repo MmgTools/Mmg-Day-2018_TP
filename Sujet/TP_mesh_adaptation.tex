@@ -568,8 +568,8 @@ For this:
 \item compute $M(V) = R \bar{\Lambda} R^{-1}$, with
   $\bar{\Lambda}$ the diagonal matrix of the truncated absolute values
   of the eigenvalues of $\bar{H}(V)$.
+\item uncomment the call to the \ttb{mmg2d} library
 \end{enumerate}
-
 
 Open the \ttb{vizuMet.mesh} file to vizualize your anisotropic metric field.
 You can click over a node to print the ellipse associated to the prescribed metric.\\
@@ -590,7 +590,7 @@ file:
 Run the application and check your isotropic metric
 field as well as the adapted mesh.\\
 
-You can find a correction of the the \ref{size_map} and
+You can find a correction of the \ref{size_map} and
 \ref{error_interp} sections in the \ttb{Correction} folder of this repository.
 
 \end{document}

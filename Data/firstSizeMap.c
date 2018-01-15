@@ -141,7 +141,7 @@ int main(int argc,char *argv[]) {
 
     // CALL THE Get_vertex FUNCTION HERE
 
-    /* Computation of the analytical function at mesh node: */
+    /* Computation of the scalar size at mesh node: */
     s = 0.;//scalar_size(x,y);
 
     /* Give solution value at position k */

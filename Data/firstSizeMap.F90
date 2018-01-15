@@ -114,7 +114,7 @@ PROGRAM main
 
      ! CALL THE Get_vertex FUNCTION HERE
 
-     ! Computation of the analytical function at mesh node
+     ! Computation of the size at mesh node
      s = 0.; !scalar_size(x,y);
 
      ! Give solution value at position k
@@ -153,7 +153,6 @@ PROGRAM main
   ENDIF
 
   !! remesh function
-  ! NULLIFY(va)
   CALL MMG2D_mmg2dlib(mmgMesh,mmgSol,ier)
   IF ( ier == MMG5_STRONGFAILURE ) THEN
     PRINT*,"BAD ENDING OF MMG2DLIB: UNABLE TO SAVE MESH"
