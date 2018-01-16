@@ -4,7 +4,24 @@
 \usepackage[utf8]{inputenc}  %% les accents dans le fichier.tex
 \usepackage{lmodern}
 \usepackage[T1]{fontenc}       %% Pour la cesure des mots accentues
-\usepackage[paper=a4paper,textwidth=160mm,textheight=25cm]{geometry}
+\usepackage[headsep=2.25cm,paper=a4paper,textwidth=160mm,textheight=23cm]{geometry}
+
+%% Mmg style
+\usepackage{graphicx}
+\graphicspath{{./figures/}}
+
+\usepackage{fancyhdr}
+
+\pagestyle{fancy}
+\fancyhf{}
+\chead{
+\makebox[\textwidth]{
+\includegraphics[width=0.95\paperwidth]{../../../../../CorporateId/header_doc.png}
+}
+}
+%\lfoot{ \hspace{-3cm} \includegraphics[width=0.23\textwidth]{../../../../../CorporateId/logo-Mmg.png}}
+\rfoot{\thepage}
+
 %\usepackage{textcomp}
 \usepackage{amssymb}
 \usepackage{amsmath}
@@ -49,10 +66,7 @@
 \usepackage{verbatim}
 \usepackage{enumitem}
 \setlist[itemize]{label=\textbullet}
-\usepackage{graphicx}
-\graphicspath{{./figures/}}
 \usepackage{adjustbox}
-\usepackage{amsmath}
 
 \newtheorem{remark}{Remark}[section]
 
@@ -66,8 +80,8 @@
 \newcommand{\ra}{$\rightarrow$}
 
 
-\author{Algiane Froehly}
-\date{\today}
+\author{Charles Dapogny, Algiane Froehly}
+\date{Janunary 17, 2018}
 \title{Practical session: Mesh adaptation with the \mmg\ platform}
 
 \begin{document}
@@ -242,7 +256,7 @@ If successfully builded, Doxygen documentation can be opened in the folder
 \ttb{build/doc/\$EXEC\_NAME/html/index.html} 
 \end{center}
 where
-\ttb{EXEC\_NAME} stands for \texttt{mmg2d},\texttt{mmg3d} or \texttt{mmgs} depending on the context. 
+\ttb{\$EXEC\_NAME} stands for \texttt{mmg2d}, \texttt{mmg3d} or \texttt{mmgs} depending on the context. 
 
 You may alternatively open this help file in your
 web browser by supplying the address 
@@ -477,7 +491,7 @@ Now, follow the program:
 \item Set the minimal edge size parameter to 0.00001 (\ttb{MMG2D\_Set\_dparameter} function);
 \item Call the \ttb{mmg2d} library (\ttb{MMG2D\_mmg2dlib} function);
 \item Save the final mesh and metric;
-\item fFee the \ttb{mmg} structures (\ttb{MMG2D\_Free\_all} function);\\
+\item Free the \ttb{mmg} structures (\ttb{MMG2D\_Free\_all} function);\\
 \end{enumerate}
 
 You may find informations about the prototypes and the role of the API
