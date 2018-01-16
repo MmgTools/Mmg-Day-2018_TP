@@ -50,6 +50,7 @@
 \usepackage{graphicx}
 \graphicspath{{./figures/}}
 \usepackage{adjustbox}
+\usepackage{amsmath}
 
 \newcommand{\ttb}[1]{\texttt{\textbf{#1}}}
 \newcommand{\msh}{\texttt{.msh}}
@@ -534,10 +535,41 @@ remeshing step must not been performed.
 \end{enumerate}
 
 \subsection{Computation of a size map to control the interpolation error over the mesh}
-The error of interpolation at a mesh node $V$, we want to compute
-the matrix $M(V)$ such as:
+In this section, we note:
+\begin{itemize}
+\item $u$ the exact solution of a problem;
+\item $H_u$ the Hessian of this solution;
+\item $K$ a mesh element;
+\item $V_i$ the vertices of the element $K$;
+\item $\vec{e}$ the largest edge of the element $K$;
+\item $\left<\vec{e},M\vec{e}\right>$ the length of the edge $\vec{e}$ in the metric $M$.\\
+\end{itemize}
+
+In the case of a $P1$ finite element method, we can
+impose an error of interpolation of $\epsilon$ over an element $K$ by
+choosing $\vec{e}$, such as:
+\begin{align*}
+\epsilon &= \frac{2}{9} \, \left< \vec{e},\max_{v \in V_i} \left| H_u (v) \right| \vec{e} \right>\\
+\end{align*}
+wich means that we want:
+\begin{align*}
+1        &= \left< \vec{e},\frac{2}{9\epsilon}  \max_{v \in V_i} \left| H_u (v) \right| \vec{e} \right>\\
+\end{align*}
+If we note $M = \frac{2}{9\epsilon} \max_{v \in V_i} \left| H_u (v)
+\right|$, we can see that we want edges of length 1 in the metric
+$M$. (See
+\url{https://www.ljll.math.upmc.fr/frey/publications/mim2.pdf} for the
+proof).\\
+
+In practice, we will give to the remesher the matric $M$ at the mesh nodes.
+Thus, at a mesh node $V$, we want to compute the tensor $M(V)$ such
+as:
 $$
-M(V) = \frac{2}{9\epsilon} \, \left | H_u(V) \right | = \frac{2}{9\epsilon} \, R
+M(V) = \frac{2}{9\epsilon} \, \left | H_u(V) \right |
+$$
+$M$ is a symetric definite positive tensor so it can be diagonalized in the eigenvector basis:
+$$
+M(V) = \frac{2}{9\epsilon} \, R
 \left |\Lambda\right | R^{-1}.
 $$
 
