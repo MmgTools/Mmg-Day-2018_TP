@@ -1,11 +1,13 @@
 \documentclass{article}
 \usepackage{graphicx}
-\usepackage[francais]{babel}
+%\usepackage[francais]{babel}
 \usepackage[utf8]{inputenc}  %% les accents dans le fichier.tex
 \usepackage{lmodern}
 \usepackage[T1]{fontenc}       %% Pour la cesure des mots accentues
 \usepackage[paper=a4paper,textwidth=160mm,textheight=25cm]{geometry}
 %\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{amsmath}
 
 \usepackage{hyperref}
 \hypersetup{
@@ -51,6 +53,9 @@
 \graphicspath{{./figures/}}
 \usepackage{adjustbox}
 
+\newtheorem{remark}{Remark}[section]
+
+
 \newcommand{\ttb}[1]{\texttt{\textbf{#1}}}
 \newcommand{\msh}{\texttt{.msh}}
 \newcommand{\mesh}{\texttt{.mesh}}
@@ -62,41 +67,50 @@
 
 \author{Algiane Froehly}
 \date{\today}
-\title{TP: Mesh adaptation with the Mmg platform}
+\title{Practical session: Mesh adaptation with the \mmg\ platform}
 
 \begin{document}
 \maketitle
 
 \date{}
 
-\section{Goals:}
+\section{Goals of the session:}
 \begin{itemize}
-\item Learn to run the Mmg applications;
-\item learn to call the Mmg libraries;
-\item understand the Mmg outputs;
-\item adapt a mesh to a given size map;
-\item compute an isotropic/anisotropic size map based on the interpolation error.
+\item Learn to run the \mmg\ applications;
+\item Learn to call the \mmg\ libraries;
+\item Understand the \mmg\ outputs;
+\item Adapt a mesh to a given size map;
+\item Compute an isotropic/anisotropic size map based on the interpolation error of a user-defined function.
 \end{itemize}
 
-\section{Mmg platform in short}
-The Mmg platform gathers software dedicated to simplicial mesh modifications~:
+%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The \mmg\ platform in short}
+%%%%%%%%%%%%%%%%%%%%%%%%
+
+The \mmg\ platform is a suite of three softwares for performing modifications on simplicial meshes (i.e. composed of triangles in 2d, tetrahedra in 3d)~:
 \begin{itemize}
-\item mmg2d: for 2D meshes;
-\item mmgs: for 3D surface meshes;
-\item mmg3d: for 3D volume meshes.
+\item \texttt{mmg2d} is dedicated for the treatment of 2d meshes;
+\item \texttt{mmgs} deals with 3d surface meshes;
+\item \texttt{mmg3d} considers 3d volume meshes.
 \end{itemize}
-All this software allow quality improvement, mesh adaptation to a size
-map (isotropic/anisotropic) and level-set discretization.\\
+These three softwares perform quite similar operations in their respective settings:  
+quality improvement of a user-supplied mesh, mesh adaptation to a size
+map (isotropic/anisotropic) and level set discretization.\\
 
-Additional documentation can be founded here~:\\
-\url{http://www.mmgtools.org/mmg-remesher-try-mmg/mmg-remesher-tutorials}
-\\and here~:\\
-\url{http://www.mmgtools.org/mmg-remesher-try-mmg/mmg-remesher-options}
+A more exhaustive documentation of the \mmg\ softwares may be founded at the following addresses:
+\begin{center}
+\url{http://www.mmgtools.org/mmg-remesher-try-mmg/mmg-remesher-tutorials} ,  
+\end{center}
+and 
+\begin{center}
+\url{http://www.mmgtools.org/mmg-remesher-try-mmg/mmg-remesher-options} . 
+\end{center}
 
-
-\subsection{Installation}
+%%%%%%
+\subsection{Installation of \mmg}
+%%%%%%%
 \begin{enumerate}
-\item Clone the Mmg repository and build the applications, libraries and Doxygen documentation:
+\item Clone the \mmg\ repository and build the applications, libraries and Doxygen documentation:
   \begin{lstlisting}[language=bash,breaklines=true,breakindent=0pt,columns=fullflexible]
     $ git clone https://github.com/MmgTools/mmg.git
     $ cd mmg
@@ -106,29 +120,33 @@ Additional documentation can be founded here~:\\
     $ make
     $ make doc
   \end{lstlisting}
-\item if your are root, you can run the make install command too.
+\item if your are root, you may use the \texttt{make install} command too.
 \item otherwise, add the path of the \ttb{build/bin} folder to your \ttb{PATH}
   variable to be able to run the applications from your terminal
-  without adding the full binary path (in the command line,
-  \ttb{\$PATH\_TO\_BIN} must be replaced by your path through the Mmg
-  \ttb{build/bin} directory:
-\begin{lstlisting}[language=bash]
+  without adding the full binary path \begin{lstlisting}[language=bash]
   $ echo "PATH=$PATH_TO_BIN:$PATH" >> ~/.bashrc
   $ source ~/.bashrc
 \end{lstlisting}
+In the above command line, \ttb{\$PATH\_TO\_BIN} has to be replaced by your path through the \mmg \ttb{build/bin} directory.
+
 \end{enumerate}
 
 \subsection{Mesh vizualisation}
-You can choose to save your meshes at the native \mmg\ file format (\mesh) and
-to vizualize your mesh with the \medit\ software (advised) or at \gmsh\ file
-format (\msh, you must then use \gmsh\ to vizualize your mesh).
+You can choose to save your meshes either at the native \mmg\ file format (\mesh) and then
+to vizualize your mesh with the \medit\ software (advised) or as a \gmsh\ file
+format (\msh), in which case you must use \gmsh\ to vizualize your mesh.
 
 \subsubsection{Medit installation}
-\medit\ is an OpenGL-based scientific visualization software that can be downloaded on Github:\\
-\url{https://github.com/ISCDtoolbox/Medit}.\\ A french documentation is available:\\
-\url{https://www.ljll.math.upmc.fr/frey/logiciels/Docmedit.dir/index.html}.\\
+\medit\ is an OpenGL-based scientific visualization software that can be downloaded on Github:
+\begin{center}
+\url{https://github.com/ISCDtoolbox/Medit}.
+\end{center}
+ A documentation (in French) is available at:
+ \begin{center}
+\url{https://www.ljll.math.upmc.fr/frey/logiciels/Docmedit.dir/index.html}.
+\end{center}
 
-To build Medit, you need to have git and CMake on your PC. Then:
+To build \medit\, you need to have git and CMake on your PC. Then:
 \begin{lstlisting}[language=bash]
 $ git clone https://github.com/ISCDtoolbox/Medit.git
 $ cd Medit
@@ -138,7 +156,7 @@ $ cmake ..
 $ make
 $ make install
 \end{lstlisting}
-\medit\ is installed in \ttb{\textasciitilde/bin}, you can add this path to your \ttb{PATH}
+\medit\ is automatically installed in the folder \ttb{\textasciitilde/bin}, and you can add this path to your \ttb{PATH}
   variable:
 \begin{lstlisting}[language=bash]
   $ echo "PATH=~/bin:$PATH" >> ~/.bashrc
@@ -154,117 +172,143 @@ $ make install
 \end{itemize}
 
 
-\subsubsection{Medit main commands\\}
-To test \medit, you can use the \ttb{linkrods.mesh} file provided in the \ttb{TP/Data} directory of this repository. To vizualize your mesh, simply run:
+\subsubsection{Medit main commands}
+To try out \medit, you can use the \ttb{linkrods.mesh} file provided in the \ttb{TP/Data} directory of this repository. To vizualize your mesh, simply run:
 \begin{lstlisting}[language=bash]
 $ medit $MESH_PATH/linkrods.mesh
 \end{lstlisting}
-where \ttb{\$MESH\_PATH} is the path toward the \ttb{TP/Data} folder. Medit print some mesh statistics in your terminal among which:
+where \ttb{\$MESH\_PATH} is the path toward the \ttb{TP/Data} folder. 
+
+\medit\ prints some mesh statistics in your terminal among which:
 \begin{itemize}
-\item The number of each entity of the mesh (vertices, triangles...);
-\item the size of the mesh bounding box;
-\item if a solution file (\ttb{.sol}) file as been readed.\\
+\item The number of each entity in the mesh (vertices, triangles...);
+\item The size of the mesh bounding box;
+\item If a solution file (\ttb{.sol}) file as been read.\\
 \end{itemize}
 
 
-You can click on the graphical window and:
+You can click on the graphic window and:
 \begin{itemize}
-\item rotate the object by maintaining \ttb{left click} and moving the mouse;
-\item translate it with \ttb{alt+left click};
-\item zoom with the \ttb{z} key and unzoom with \ttb{Z};
-\item print/remove the mesh lines with \ttb{l};
-\item print colors by clicking on \ttb{c};
-\item print colors associated to the entities reference with \ttb{e};
-\item print the mesh singularities with \ttb{g}. Required points
+\item Rotate the object by maintaining \ttb{left click} and moving the mouse;
+\item Translate it with \ttb{alt+left click};
+\item Zoom with the \ttb{z} key and unzoom with \ttb{Z};
+\item Print/remove the mesh lines with \ttb{l};
+\item Print colors by clicking on \ttb{c};
+\item Print colors associated to the entities reference with \ttb{e};
+\item Print the mesh singularities with \ttb{g}. Required points
   appears in green, corners and ridges in red and edges in different colors
   depending on their references (orange for a 0 ref);
-\item inspect the inside mesh (\ttb{clipping mode}, 3D only):
+\item Inspect the inside mesh (\ttb{clipping mode}, 3D only):
 \begin{itemize}
-\item cut/uncut the mesh along a plane with \ttb{F1};
-\item edit/unedit this plane (\ttb{F2}) and rotate it (\ttb{left click}) or translate it (\ttb{alt+left click});
-\item print/unprint volume mesh with \ttb{F4};
+\item Cut/uncut the mesh along a plane with \ttb{F1};
+\item Edit/unedit this plane (\ttb{F2}) and rotate it (\ttb{left click}) or translate it (\ttb{alt+left click});
+\item Print/unprint volume mesh with \ttb{F4};
 \end{itemize}
-\item delete (resp. undelete) elements of a given color:
+\item Delete (resp. undelete) elements of a given color:
   \ttb{shift-click} on one element of this color, then press \ttb{r} (resp. \ttb{R});
-\item quit \medit\ with \ttb{q}.
+\item Quit \medit\ with \ttb{q}.
 \end{itemize}
 
-\section{A first run of the remesher}
-To run the remesher, you must give the application name followed by
-the path and mesh name (you can use the \ttb{naca\_embedded.mesh} 2D mesh
-provided \ttb{TP/Data} directory of this repository)~:
+\section{Getting started with the remeshing mode of \mmg}
+To run the remesher, you simply have to enter the name of the program (by default \texttt{mmg2d\_O3} for a 2d remeshing), 
+followed by the path and mesh name. 
+For instance, remeshing the 2d mesh \ttb{naca\_embedded.mesh} mesh
+provided in the \ttb{TP/Data} directory of this repository is achieved by the following command line:
+
 \begin{lstlisting}[language=bash]
 $ cd TP
 $ mmg2d_O3 Data/naca_embedded.mesh
 \end{lstlisting}
 
-By default, Mmg creates a mesh in the same path and of the same
-extension than the input mesh (\ttb{.mesh} here) with the \ttb{.o}
-prefix before the extension, so here: \ttb{Data/naca\_embedded.o.mesh}.\\
+By default, the output mesh lies in the same path and has the same
+extension as the input mesh (\ttb{.mesh} here) with the \ttb{.o}
+prefix before the extension; in the above case: \ttb{Data/naca\_embedded.o.mesh}.
 
-\subsection{Get help}
-You can get help by running \mmg\ with \ttb{-h} argument:
+\subsection{Getting help}
+
+You can get help by using the \ttb{-h} argument in the command line:
 \begin{lstlisting}[language=bash]
 $ mmg2d_O3 -h
 \end{lstlisting}
-
-Man pages are available under the \ttb{doc/man} directory:
+%
+Man pages are available in the \ttb{doc/man} directory:
 \begin{lstlisting}[language=bash]
 $ man ../doc/man/mmg2d.1.gz
 \end{lstlisting}
 
-If successfully builded, Doxygen documentation can be oppened in
-\ttb{build/doc/\$EXEC\_NAME/html/index.html} with
-\ttb{\$EXEC\_NAME}=mmg2d,mmg3d or mmgs. Thus, you can open it in your
-web browser (address: \ttb{file:///\$PATH\_TO\_BUILD/build/doc/\$EXEC\_NAME/html/index.html},
-where \ttb{\$PATH\_TO\_BUILD} must be replaced by your path through
-the Mmg build directory).
+If successfully builded, Doxygen documentation can be opened in the folder
+\begin{center}
+\ttb{build/doc/\$EXEC\_NAME/html/index.html} 
+\end{center}
+where
+\ttb{EXEC\_NAME} stands for \texttt{mmg2d},\texttt{mmg3d} or \texttt{mmgs} depending on the context. 
 
-\subsection{The Mmg output}
-You can see the Mmg output in your terminal. By default, Mmg prints (see figure \ref{mmg_konsole}):
+You may alternatively open this help file in your
+web browser by supplying the address 
+\begin{center} 
+\ttb{file:///\$PATH\_TO\_BUILD/build/doc/\$EXEC\_NAME/html/index.html},
+\end{center}
+where \ttb{\$PATH\_TO\_BUILD} has to be replaced by your path through
+the \mmg\ build directory.
+
+\subsection{The output of \mmg\ runs}
+The output of the computation is displayed in the terminal; see figure \ref{mmg_konsole} for an example. 
+By default, \mmg\ prints:
 \begin{itemize}
 \item The different phases of the algorithm (analysis step, remeshing
-  step...) and the time spent in each of this steps;
-\item some info about the input/output qualities histogram;
-\item the final mesh statistics (number of nodes, elements and edges).
+  step...) and the time spent in each of them;
+\item Some info about the input/output element qualities;
+\item The final mesh statistics (number of nodes, elements and edges).
 \end{itemize}
 \begin{figure}
 \centering
 \includegraphics[width=0.8\linewidth]{mmg_konsole}
 \caption{\label{mmg_konsole}
-Default Mmg output.}
+A typical default \mmg\ output.}
 \end{figure}
 
-You can change the default verbosity of Mmg with the \ttb{-v}
-option. By default, the verbosity value is setted to 1. If you set the
-verbosity to 5, \ttb{ mmg2d\_O3 Data/naca\_embedded.mesh -v 5}, you will obtain~:
+You may change the default verbosity of \mmg\ with the \ttb{-v}
+option. By default, the verbosity value is 1. For instance, turning this verbosity to 5 by using 
+\begin{center}
+\ttb{ mmg2d\_O3 Data/naca\_embedded.mesh -v 5},
+\end{center} 
+allows to display:
 \begin{itemize}
-\item detailed quality histograms (see figure \ref{qual_histo});
-\item detailed remeshing steps;
-\item edge length histogram (see figure \ref{edge_histo}).
+\item Detailed quality histograms (see figure \ref{qual_histo});
+\item Detailed remeshing steps;
+\item Edge length histogram (see figure \ref{edge_histo}).
 \end{itemize}
 
 \begin{figure}
 \centering
 \includegraphics[width=0.8\linewidth]{qual_histo}
 \caption{\label{qual_histo}
-Detailed quality histogram.}
+A detailed quality histogram.}
 \end{figure}
 
 \begin{figure}
 \centering
 \includegraphics[width=0.8\linewidth]{edge_histo}
 \caption{\label{edge_histo}
-Edge length histogram.}
+An edge length histogram.}
 \end{figure}
 
+\subsection{The four main parameters of \mmg}
+By default, \mmg\ creates a mesh
+that complies with 
+\begin{itemize}
+\item The minimum length of an edge in the mesh, controlled by the \ttb{-hmin} command line parameter; 
+\item The maximum length of an edge in the mesh, controlled by the \ttb{-hmax} command line parameter; 
+\item The required boundary approximation, controlled by the \ttb{-hausd} parameter; see Section \ref{sec.hausd} below about this point; 
+\item the maximal ratio between two adjacent edges, controlled by the \ttb{-hgrad} parameter: the ration between the length of two adjacent edges $e_1$, $e_2$ in the mesh satisfies
+$$ \frac{1}{\ttb{hgrad}} \leq \frac{| e_1|}{| e_2|} \leq \ttb{hgrad}; $$
+this parameter is set to 1.3 by default. 
+\end{itemize} 
+
 \subsection{Mesh improvement with edge length preservation: -optim option}
-Open your output mesh in Gmsh: by default, Mmg tries to create a mesh
-that respect the asked boundary approximation (\ttb{-hausd} option,
-0.01 by default), the maximal ratio between two adjacent edges
-(\ttb{-hgrad} option, 1.3 by default) and that contains the smallest
-possible number of points.\\ If
-you want to preserve the edge length of the input mesh, you can run Mmg with
+
+\textcolor{red}{Pas tr\`es clair ce que tu entends par l\`a : veux-tu dire que tu gardes les m\^emes longueurs dans une r\'egion donn\'ee... ?}
+ If you wish to preserve the edge length of the input mesh, you can run Mmg with
 the \ttb{-optim} option~:
 \begin{lstlisting}[language=bash]
 $ mmg2d_O3 Data/naca_embedded.mesh -optim -v 5
@@ -272,115 +316,123 @@ $ mmg2d_O3 Data/naca_embedded.mesh -optim -v 5
 Compare the input and output quality/lengths histograms and check that
 your ouput mesh is of the same size than the input one.\\
 
-Open the input and output meshes (\ttb{medit Data/naca\_embedded.mesh
-  Data/naca\_embedded.o.mesh}) and check that the edge lengths are
-preserved. You can visualize the metric computed by \mmg\ by selecting
-the window associated to the output mesh and by pressing \ttb{m} (you may need to
+Open the input and output meshes \ttb{medit Data/naca\_embedded.mesh} and 
+  \ttb{Data/naca\_embedded.o.mesh}, and check that the edge lengths are
+preserved. 
+
+You can visualize the metric computed by \mmg\ according to the edge length in the input mesh (see Section \ref{sec.meshsizemap} to get a hint of how \mmg\ uses this information to proceed to remeshing). 
+To this end, using \medit, select the window associated to the output mesh and press \ttb{m} (you may need to
 remove the mesh lines with \ttb{l}).\\
 
-If you want, you can play with other \mmg\ options~: try for example
-to run \mmg\ without the -optim option and to disable the gradation
+If you want, you can play with other \mmg\ options~: you may for instance try
+to run \mmg\ without the \ttb{-optim} option and to disable the gradation
 (\ttb{-hgrad -1}).
 
-\subsection{Boundary approximation}
-You can try to better approach the naca geometry.
+\subsection{Boundary approximation}\label{sec.hausd}
+In order to better approach the naca geometry, it is desirable to adapt the mesh to the curvature of the boundary - i.e. to impose smaller elements where the boundary of the naca is more curved.
+To this end,
 \begin{enumerate}
-\item look at the size of the naca airfoil (in \medit, zoom over the
+\item Look at the size of the naca airfoil (in \medit, zoom over the
 naca and select a vertex near the top of the naca (alt+shift+left
 click) and another near the bottom. The point coordinates are printed
 in the terminal so you can evaluate the naca thickness);
-\item try a hausdorff value related to this length and decrease the minimal edge
+\item Try a hausdorff value related to this length and decrease the minimal edge
 size in consequence (for example \ttb{-hausd 0.0001 -hmin 0.000001})
 \end{enumerate}
 
 \textbf{\\Why do I need to specify \ttb{hmin} in addition to the hausdorff parameter?\\}
-To avoid numerical errors (division by 0) and users mistakes (0 length
-edges asked), Mmg automatically computes a minimal edge size. If a
-size map is provided, this minimal edge size is smallest than the
-smallest asked length but if the user doesn't provide a size map, we
-must extract a length information from the initial mesh: in this case,
-by default, Mmg set \ttb{hmin} to 0.1 times the mesh bounding box
+To avoid numerical errors (notably division by 0) and users mistakes (0 length
+edges asked), \mmg\ automatically computes a minimal edge size. If a
+size map is provided (see Section \ref{sec.meshsizemap}), this minimal edge size is smallest than the
+smallest required length but if the user does not supply a size map, a length information is extracted from the initial mesh: in this case,
+by default, \mmg\ sets \ttb{hmin} to 0.1 times the mesh bounding box
 size. In our case, because the naca is a very small object in an
-infinite box, the default \ttb{hmin} value became too large when we
-ask for a finer boundary approximation.
+infinite box, the default \ttb{hmin} value is too large when a finer boundary approximation is desired.
 
-\subsection{3D boundary approximation}
+\subsection{3d boundary approximation}
 In this subsection, we will use the \ttb{thinker.mesh} mesh provided
-in the \ttb{Data} folder. It is a 3D surface mesh so we will use
-\ttb{mmgs} to remesh it.
+in the \ttb{Data} folder. It is a 3d surface mesh so
+\ttb{mmgs} is used in order to remesh it.
 
-\textbf{Remark: } The input mesh is a non-conformal mesh (under the
-bed plate). \mmg\ doesn't detect such meshes and is not supposed to work on it.
+\begin{remark}
+The input mesh is a non conforming mesh (see under the
+bed plate). \mmg\ does not detect such patterns and is not supposed to work on it.
 In the \ttb{thinker} case, it just leads to a warning:\\
 \ttb{\#\# Warning: anaelt: flattened angle around ridge. Unable to split it.\\}
- and to have a bad approximation of the non conformal area.
+ and the approximation of the non conforming area is pretty bad.
+ \end{remark}
+
+\textcolor{red}{On n'a pas une version conforme du thinker ?}
 
 \subsubsection{Mesh analysis without any modification}
-\mmg\ allows to choose the remeshing operator that can be performed. By
-default, insertion/collapse, edge swapping and vertex moving are
+\mmg\ allows to choose the remeshing operators that are applied. By
+default, insertion/collapse, edge swapping and vertex relocation are
 authorized. You can manually disabled each one of this operator:
 \begin{itemize}
-\item no point insertion/collapse: \ttb{-noinsert} command line argument;
-\item no edge swapping: \ttb{-noswap};
-\item no point relocation: \ttb{-nomove}.
+\item No point insertion/collapse: \ttb{-noinsert} command line argument;
+\item No edge swapping: \ttb{-noswap};
+\item No point relocation: \ttb{-nomove}.
 \end{itemize}
 
-If you combine this 3 options, \mmg\ doesn't modify your mesh but
-perform the analysis. Thus, the output mesh contains the singularities
+If you combine these 3 options, \mmg\ does not modify the input mesh but only
+performs the analysis. Thus, the output mesh contains the singularities
 detected by the remesher on the initial mesh. This combination can
-also be used to convert \gmsh\ file into \mmg\ one or vice versa.
-
+also be used to convert a \gmsh\ file into a \mmg\ one or vice versa.
 
 \subsubsection{Edge detection}
 \begin{enumerate}
 \item Analyze your mesh with the default edge detection value. Use
   \medit\ to vizualize the detected singularities.
-\item increase/decrease this value (\ttb{-ar \textit{val}}) to see the
+\item Increase/decrease this value (\ttb{-ar \textit{val}}) to see the
   effect on the sharp angle (ridge) detection (analysis only);
-\item analyze your mesh without the detection of sharp angle( \ttb{-nr} option).
-You can see that it remains very few ridges. This ridges are setted by Mmg to mark:
+\item Analyze your mesh without the detection of sharp angle( \ttb{-nr} option).
+You can see that there remain very few ridges. The only remaining ones are:
 \begin{itemize}
-\item non-manifold edges: edges at the intersection of a surface and
-  a hanging surface (so the surfaces intersect in a T-shape);
-\item the boundary edges of an open surface.
+\item Non-manifold edges: edges at the intersection of a surface and
+  a hanging surface (so the surfaces intersect in a T-shaped pattern);
+\item The boundary edges of an open surface.
 \end{itemize}
-\item remesh your mesh with a suitable value for the ridge detection.
+\item Remesh your mesh with a suitable value for the ridge detection angle.
 \end{enumerate}
 
 \subsubsection{Play with the hausdorff parameter}
 \begin{enumerate}
-\item open your mesh with medit to get its bounding box;
-\item evaluate the order of amplitude for the Hausdorff parameter;
-\item play with some hausdorff values (-hausd \textit{val}).
+\item Open your mesh with \medit\ to get the size of its bounding box;
+\item Evaluate the order of amplitude for the Hausdorff parameter;
+\item Try out several values of the hausdorff parameter (\ttb{-hausd} \textit{val}).
 \end{enumerate}
 
-\section{Mesh adaptation to a size map}
-You can provide to Mmg a size map in a \ttb{.sol} file. This file
-lists, for each node, the prescribed edge length. In isotropic case,
-the file contains 1 scalar data per node (the wanted edge length). In
-anisotropic case, it contains a metric tensor $M$ that can be
-diagonalized in the basis of the eigenvectors~:
-$$
-M = R\, \Lambda \, R^{-1}
-$$
-With:
-\begin{itemize}
-\item $R = (r_{ij})_{ij}$, the matrix of the eigenvectors;
-\item $\Lambda = (\lambda_j)_j$ the diagonal matrix of the eigenvalues.
-\end{itemize}
-A given eigenvalue and the associated eigenvector are related to the
-wanted edge length: $\lambda_j=\frac{1}{s_j^2}$ with $s_j$ the wanted
-length in the direction $r_j$.\\
+\section{Mesh adaptation to a size map}\label{sec.meshsizemap}
+It is possible to supply \mmg\ with a size map in a \ttb{.sol} file. The role of this file
+is to prescribe a desired local edge length around each vertex in the mesh. 
 
-See figure \ref{map} to see an explanation of the .sol file format
-for an isotropic and an anisotropic size map.\\
+\begin{itemize}
+\item In the case of \textit{isotropic} mesh adaptation,
+1 scalar data is supplied per node (the wanted edge length around it). 
+\item In the case of \textit{anisotropic} mesh adaptation, this file supplies a metric tensor $M$ at each vertex, that can be
+diagonalized in the eigenbasis:
+$$
+M = R\, \Lambda \, R^{-1} , 
+$$
+where:
+\begin{itemize}
+\item $R = (r_{ij})_{ij}$ is the matrix of the eigenvectors;
+\item $\Lambda = (\lambda_j)_j$ is the diagonal matrix containing the eigenvalues of $M$.
+\end{itemize}
+A given eigenvalue $\lambda_j$ and the
+desired edge length $s_j$ in the direction of this the eigenvector $r_j$ are related as: 
+$$\lambda_j=\frac{1}{s_j^2}.$$
+\end{itemize} 
+
+See Figure \ref{map} for an explanation of the \ttb{.sol} file format
+for both isotropic and anisotropic size maps.\\
 
 \begin{figure}
 \centering
 \includegraphics[width=0.4\linewidth]{iso_map}
 \includegraphics[width=0.4\linewidth]{aniso_map}
 \caption{\label{map}
-Isotropic (left) and anisotropic (right) size maps at \ttb{Medit} file format.}
+Isotropic (left) and anisotropic (right) size maps at \ttb{medit} file format.}
 \end{figure}
 
 \begin{figure}
@@ -391,46 +443,49 @@ Isotropic (left) and anisotropic (right) size maps at \ttb{Medit} file format.}
 
 You will find in the \ttb{Data} directory two size maps (\ttb{naca\_iso.sol} and
 \ttb{naca\_aniso.sol}) for the
-\ttb{naca\_embedded.mesh} 2D mesh. Try to adapt your mesh to each map. For
+\ttb{naca\_embedded.mesh} 2D mesh. A adapt your mesh to each map. For
 example, for the isotropic map~:
 \begin{lstlisting}[language=bash]
 $ mmg2d_O3 Data/naca_embedded.mesh -sol naca_iso.sol -hausd 0.001 -v 5
 \end{lstlisting}
 
-Again, you can play with the gradation parameter.
+Again, you may play with the gradation parameter \ttb{-hgrad}.
 
-\section{Call the \mmg\ libraries to manually compute a size map\label{size_map}}
-\mmg\ can be called from \ttb{C}, \ttb{C++} or \ttb{Fortran} code
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Calling the \mmg\ libraries to manually compute a size map\label{size_map}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The \mmg\ library may be called from \ttb{C}, \ttb{C++} or \ttb{Fortran} codes by
 using its API functions.\\
-
-In this section, we will create a size map for the
+\\
+In this section, we shall create a size map for the
 \ttb{naca\_embeddded.mesh} mesh and call the Mmg library.
 
  You can
 start either from the \ttb{Data/firstSizeMap.c} or
 \ttb{Data/firstSizeMap.F90} file.\\
- For now, this program:
+Now, follow the program:
 \begin{enumerate}
-\item include the mmg2d header file (needed to know the Mmg stuctures):\\
-\ttb{\#include "mmg/mmg2d/libmmg2df.h"}
-
-\item initialize the \mmg\ structures (\ttb{MMG2D\_Init\_mesh} function);
-\item load the mesh (\ttb{MMG2D\_loadMesh} function);
-\item save the initial mesh and metric in the \ttb{init.mesh} and
+\item Include the \ttb{mmg2d} header file (needed to know the \mmg\ structures):
+\begin{center}
+\ttb{\#include "mmg/mmg2d/libmmg2df.h".}
+\end{center}
+\item Initialize the \mmg\ structures (\ttb{MMG2D\_Init\_mesh} function);
+\item Load the mesh (\ttb{MMG2D\_loadMesh} function);
+\item Save the initial mesh and metric in the \ttb{init.mesh} and
   \ttb{init.sol} files (\ttb{MMG2D\_saveMesh} and \ttb{MMG2D\_saveSol}
-  functions). Note that if the solution has not been setted, it is not saved.
-\item set the hausdorff parameter to 0.0001 (\ttb{MMG2D\_Set\_dparameter} function);
-\item set the minimal edge size parameter to 0.00001 (\ttb{MMG2D\_Set\_dparameter} function);
-\item call the \ttb{mmg2d} library (\ttb{MMG2D\_mmg2dlib} function);
-\item save the final mesh and metric;
-\item free the \ttb{mmg} structures (\ttb{MMG2D\_Free\_all} function);\\
+  functions). Note that if the solution has not been set, it is not saved.
+\item Set the hausdorff parameter to 0.0001 (\ttb{MMG2D\_Set\_dparameter} function);
+\item Set the minimal edge size parameter to 0.00001 (\ttb{MMG2D\_Set\_dparameter} function);
+\item Call the \ttb{mmg2d} library (\ttb{MMG2D\_mmg2dlib} function);
+\item Save the final mesh and metric;
+\item fFee the \ttb{mmg} structures (\ttb{MMG2D\_Free\_all} function);\\
 \end{enumerate}
 
-You can find informations about the prototypes and the role of the API
+You may find informations about the prototypes and the role of the API
 functions in the \ttb{mmg2d} Doxygen
 documentation. In the left panel:
 \begin{itemize}
-\item unroll the \ttb{mmg2d}\ra\ttb{Files}\ra\ttb{File list} panel
+\item Unroll the \ttb{mmg2d}\ra\ttb{Files}\ra\ttb{File list} panel
   (see image \ref{dox-1}) and click on the \ttb{libmmg2d.h} item.
 \begin{figure}
 \centering
@@ -446,94 +501,107 @@ Access to the API functions documentation in Doxygen}
 \centering
 \includegraphics[width=0.5\linewidth]{Doxygen-2}
 \caption{\label{dox-2}
-MMG2D\_Get\_meshSize function Doxygen documentation/}
+\ttb{MMG2D\_Get\_meshSize} function in the Doxygen documentation.}
 \end{figure}
 \end{itemize}
 
-Few remarks for fortran users:
+A few remarks are in order for \ttb{Fortran} users:
 \begin{itemize}
-\item the fortran prototypes are given in the \ttb{Remarks} section of
-  the doc. In general, Fortran arguments are the same than the C
+\item The \ttb{Fortran} prototypes are given in the \ttb{Remarks} section of
+  the documentation. In general, \ttb{Fortran} arguments are the same than the \ttb{C}
   arguments with an additional integer argument (the last one) to
   store the return value of the fortran subroutine.
-\item for C variadic function (\ttb{Init\_mesh} and \ttb{Free\_all}),
-  it is not possible to provide a Fortran interface, thus, wrong
+\item For \ttb{C} variadic function (\ttb{Init\_mesh} and \ttb{Free\_all}),
+  it is not possible to provide a \ttb{Fortran} interface, thus, wrong
   arguments can be passed without error at build time.
 \end{itemize}
 
 You can open the program file and try to understand what is done.
 
-\subsubsection{Build an application that calls the mmg2d library}
+\subsection{Build an application that calls the mmg2d library}
 You can build the application with the following command:
 \begin{lstlisting}[language=bash]
 $ gcc firstSizeMap.c -o firstSizeMap -L $MMG_PATH/build/lib/ -lmmg2d
   -I $MMG_PATH/build/include/ -lm
 \end{lstlisting}
 where the \ttb{\$MMG\_PATH} variable must be replaced by your path
-through the Mmg directory (Fortran users just need to use a fortran compiler
-instead of a C one and to replace the \ttb{firstSizeMap.c} file by the
-\ttb{firstSizeMap.F90} one). It creates the \ttb{firstSizeMap} application.\\
+through the Mmg directory (\ttb{Fortran} users just need to use a \ttb{Fortran} compiler
+instead of a \ttb{C} one and to replace the \ttb{firstSizeMap.c} file by the
+\ttb{firstSizeMap.F90} one). Doing so creates the \ttb{firstSizeMap} application.\\
 
 Call this application and look at its outputs.
 
-\subsubsection{Size map computation}
-We will create a size map that asks for edges of size 0.05 inside a
-circle of center (0,0) and radius 3 and for edges of size 0.2 outside
-(we create a finer mesh near the naca nose).\\ For that, we need to
-specify to Mmg the size and type of the solution and
+\subsection{Size map computation}
+
+\textcolor{red}{Je ne comprends pas... Dans quel cas te places-tu ? Quel maillage ?}
+We will create a size map associated with an edge length equal to 
+\begin{itemize}
+\item 0.05 inside a
+ball of center (0,0) and radius 3 
+\item 0.2 outside this ball.
+\end{itemize}
+In other terms, a finer mesh is required near the nose of the naca. 
+
+To achieve this purpose, we need to
+specify to \mmg\ the size and type of the solution and
 the solution value at each mesh node:
 \begin{enumerate}
 \item Once the mesh is stored, get its size (number of nodes,
-  elements...) and create a scalar solution of the suitable size;
-\item loop over the mesh nodes and get their coordinates.
-\item uncomment the call to the \ttb{scalar\_size} function and fill
+  elements...) and create a scalar solution with the suitable size;
+\item Perform a loop over the mesh nodes and get their coordinates.
+\item Uncomment the call to the \ttb{scalar\_size} function and fill
   this function: given the (x,y) coordinates of a vertex, it must
   compute the wanted edge size at this vertex;
-\item set the computed size in the size map with the \ttb{Set\_scalarSol} function.\\
+\item Set the computed size in the size map with the \ttb{Set\_scalarSol} function.\\
 \end{enumerate}
 
  Run your program, check your initial size map (\ttb{init.mesh} file)
  and the final mesh (\ttb{firstSizeMap.mesh}).\\
 
-\section{Size map computation to control the error of interpolation of an
-  analytic function over the mesh\label{error_interp}}
-\subsection{Computation of the nodal values of a 2D analytic function}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Size map computation to control the interpolation error of an analytic function over the mesh\label{error_interp}}
+%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Computation of the nodal values of a 2d analytic function}
 \begin{enumerate}
-\item Choose a function, for example, the following sinus function
-  $f(x,y) = sin(x/2+y/2)$;
-\item Compute its nodal values at the mesh nodes. You can start from
+\item Choose a function $f : \mathbb{R}^2 \to \mathbb{R}$, for example, 
+  $$f(x,y) = \sin\left(\frac{x}{2}+\frac{y}{2}\right);$$
+\item Compute its nodal values at the mesh nodes. You may start from
   the \ttb{Data/createSol.c} and \ttb{Data/createSol.F90} files and
-  fill the \ttb{f} function;
+  fill the function \ttb{f} ;
 \item Build the application (the \ttb{\$MMG\_PATH} variable must be
   replaced by your path through the Mmg directory):
 \begin{lstlisting}[language=bash]
 $ gcc createSol.c -o createSol -L $MMG_PATH/build/lib/ -lmmg2d
   -I $MMG_PATH/build/include/ -lm
 \end{lstlisting}
-It creates the \ttb{createSol} application.
+Doing so creates the \ttb{createSol} application.
 \item This application takes 3 arguments: your inital mesh, the wanted
   maximal error of interpolation ($\epsilon$) and the type of metric
-  that you want to compute: 0 for a scalar metric, 1 for a tensorial
-  one. For example, to create the anisotropic metric that prescribes
+  that you want to compute: 0 for a scalar metric (in the case of isotropic adaptation), 1 for a matrix
+  one (in the case of anisotropic adaptation). 
+  For example, to create the anisotropic metric that prescribes
   edge lengths allowing to have a maximal error of $0.01$ over the
   \ttb{naca\_embedded.mesh} file:
 \begin{lstlisting}[language=bash]
   $ ./createSol naca_embedded.mesh 0.01 1
 \end{lstlisting}
-This command will creates 3 files:
+This command generates 3 files:
 \begin{itemize}
 \item \ttb{vizuSolution.mesh} that allows to vizualize the analytic function;
 \item \ttb{vizuMet.mesh} that allows to vizualize the computed metric;
-\item \ttb{adaptedMesh.mesh}, the final mesh that equirepartite the
-  error of interpolation.
+\item \ttb{adaptedMesh.mesh}, the final mesh that makes even the interpolation error.
 \end{itemize}
 Note that at this step, the metric computation is not yet implemented
 thus \ttb{vizuMet.mesh} contains uninitialized values and the
 remeshing step must not been performed.
-
 \end{enumerate}
 
+%%%%%%%%
 \subsection{Computation of a size map to control the interpolation error over the mesh}
+%%%%%%%%
+
+\textcolor{red}{Pas clair du tout... Il faut peut-\^etre expliquer un peu plus la th\'eorie derri\`ere, et donner une r\'ef\'erence...?}
 The error of interpolation at a mesh node $V$, we want to compute
 the matrix $M(V)$ such as:
 $$
@@ -547,7 +615,7 @@ function of the \ttb{createSol.c} file. Use the \ttb{siz} array (of
 size 3) to store $m_{11}$, $m_{12}$ and $m_{22}$ ($m_{21} = m_{12}$ so
 it is useless to store it).\\
 
-For this:
+To achieve this, proceed as follows:
 
 \begin{enumerate}
 \item Compute $H(V)$, the Hessian of the previous analytical function
@@ -578,19 +646,33 @@ Open the \ttb{adaptedMesh.mesh} file to see the final result.
 
 \subsubsection{Isotropic size map}
 You can implement the computation of the isotropic edge length at a
-nod $V$ in the \ttb{scalar\_size} function of the \ttb{createSol.c}
+node $V$ in the \ttb{scalar\_size} function of the \ttb{createSol.c}
 file:
 
 \begin{enumerate}
 \item Perform the 4 steps of the previous section;
-\item find $\bar{\lambda}$, the maximum value of the truncated absolute values
+\item Find $\bar{\lambda}$, the maximum value of the truncated absolute values
   of the eigenvalues of $\bar{H}(V)$ and compute
   $ s(V) = \frac{1}{\sqrt{\bar{\lambda}}}$.
 \end{enumerate}
 Run the application and check your isotropic metric
 field as well as the adapted mesh.\\
 
-You can find a correction of the the \ref{size_map} and
-\ref{error_interp} sections in the \ttb{Correction} folder of this repository.
+A correction for the exercices in Sections \ref{size_map} and
+\ref{error_interp} is available in the \ttb{Correction} folder of this repository.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{thebibliography}{00}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\bibitem{Dapogny2014}
+{\sc C. Dapogny, C. Dobrzynski and P. Frey}, {\em Three-dimensional adaptive domain remeshing,
+  implicit domain meshing, and applications to free and moving boundary
+  problems}, Journal of Computational Physics. 2014;\hspace{0pt}262:358--378.
+
+\bibitem{dobFrey}{\sc C. Dobrzynski and P. Frey}, {\em Anisotropic Delaunay Mesh Adaptation for Unsteady Simulations}, Proc. 17th Int. Meshing Roundtable, Pittsburgh, (2008).
+
+\end{thebibliography}
+
 
 \end{document}
